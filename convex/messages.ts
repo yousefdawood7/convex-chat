@@ -2,15 +2,8 @@ import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 
 export const getAllMessages = query({
-  args: {
-    userId: v.id("users"),
-  },
-
-  handler: (ctx, args) => {
-    return ctx.db
-      .query("messages")
-      .filter((q) => q.eq(q.field("reciever_id"), args.userId))
-      .collect();
+  handler: (ctx) => {
+    return ctx.db.query("messages").collect();
   },
 });
 

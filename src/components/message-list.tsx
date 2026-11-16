@@ -1,21 +1,20 @@
+import { Loader2 } from "lucide-react";
 import type { RefObject } from "react";
-import type { Message, User } from "../types/chat";
-import { SentMessage } from "./sent-message";
+import type { Doc } from "../../convex/_generated/dataModel";
 import { ReceivedMessage } from "./received-message";
+import { SentMessage } from "./sent-message";
 
 interface MessageListProps {
-  messages: Message[];
-  currentUserId: string;
-  users: Record<string, User>;
-  fallbackUser: User;
+  senderUser: Doc<"users"> | undefined;
+  recieverUser: Doc<"users"> | undefined;
+  messages: Doc<"messages">[] | undefined;
   messagesEndRef: RefObject<HTMLDivElement | null>;
 }
 
 export function MessageList({
+  senderUser,
+  recieverUser,
   messages,
-  currentUserId,
-  users,
-  fallbackUser,
   messagesEndRef,
 }: MessageListProps) {
   return (
@@ -26,24 +25,29 @@ export function MessageList({
         </span>
       </div>
 
-      {messages.map((message) => {
-        const isMe = message.senderId === currentUserId;
-        const sender = users[message.senderId] || fallbackUser;
+      {!senderUser || !recieverUser || !messages ? (
+        <Loader2 size={15} className="animate-spin" />
+      ) : (
+        <>
+          {messages.map((message) => {
+            const isMe = message.sender_id === senderUser._id;
 
-        if (isMe) {
-          return <SentMessage key={message.id} message={message} />;
-        }
+            if (isMe) {
+              return <SentMessage key={message._id} message={message} />;
+            }
 
-        return (
-          <ReceivedMessage
-            key={message.id}
-            message={message}
-            sender={sender}
-          />
-        );
-      })}
+            return (
+              <ReceivedMessage
+                key={message._id}
+                message={message}
+                sender={senderUser}
+              />
+            );
+          })}
 
-      <div ref={messagesEndRef} />
+          <div ref={messagesEndRef} />
+        </>
+      )}
     </main>
   );
 }

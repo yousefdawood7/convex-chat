@@ -1,10 +1,11 @@
-import type { FormEvent, KeyboardEvent } from "react";
-import { Send, Paperclip, Smile } from "lucide-react";
+import { Paperclip, Send, Smile } from "lucide-react";
+import type React from "react";
+import type { KeyboardEvent } from "react";
 
 interface ChatInputProps {
   value: string;
   onChange: (value: string) => void;
-  onSubmit: (e?: FormEvent) => void;
+  onSubmit: (e?: React.SubmitEvent) => void;
   onKeyDown: (e: KeyboardEvent<HTMLInputElement>) => void;
 }
 

@@ -1,49 +1,48 @@
-import { useState, useRef, useEffect } from "react";
-import type { Message, User } from "../types/chat";
-import { USERS, INITIAL_MESSAGES } from "../data/mock-chat";
-import { formatCurrentTime } from "../lib/format-time";
+import { useMutation, useQuery } from "convex/react";
+import { useEffect, useRef, useState } from "react";
+import { api } from "../../convex/_generated/api";
 
 export function useChat() {
-  // Current active preview user perspective
-  const [currentUserId, setCurrentUserId] = useState<string>("user1");
+  const [currentUser, setCurrentUser] = useState<
+    "Yousef Dawood" | "Islam Machachev"
+  >("Yousef Dawood");
 
-  // TODO(workshop): Replace mock messages state with Convex query:
-  const [messages, setMessages] = useState<Message[]>(INITIAL_MESSAGES);
+  const [senderUser] =
+    useQuery(api.users.getUser, {
+      name: currentUser,
+    }) ?? [];
+
+  const [recieverUser] =
+    useQuery(api.users.getUser, {
+      name:
+        currentUser === "Yousef Dawood" ? "Islam Machachev" : "Yousef Dawood",
+    }) ?? [];
+
+  const messages = useQuery(api.messages.getAllMessages);
+
+  const addMessage = useMutation(api.messages.sendMessage);
 
   const [inputText, setInputText] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
-
-  const currentUser: User = USERS[currentUserId];
-  const otherUser: User =
-    currentUserId === "user1" ? USERS["user2"] : USERS["user1"];
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  // TODO(workshop): Replace this with useSyncExternalStore
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
 
-  const switchPerspective = () => {
-    setCurrentUserId((prev) => (prev === "user1" ? "user2" : "user1"));
-  };
-
-  const handleSendMessage = (e?: React.FormEvent) => {
+  const handleSendMessage = (e?: React.SubmitEvent) => {
     if (e) e.preventDefault();
-    if (!inputText.trim()) return;
+    if (!inputText.trim() || !senderUser || !recieverUser || !messages) return;
 
-    // TODO(workshop): Replace with Convex mutation:
-    const newMessage: Message = {
-      id: `m-${Date.now()}`,
-      senderId: currentUserId,
-      text: inputText.trim(),
-      timestamp: formatCurrentTime(),
-      status: "delivered",
-    };
+    addMessage({
+      message: inputText,
+      sender_id: senderUser._id,
+      reciever_id: recieverUser._id,
+    });
 
-    setMessages((prev) => [...prev, newMessage]);
     setInputText("");
   };
 
@@ -54,16 +53,21 @@ export function useChat() {
     }
   };
 
+  function switchUser() {
+    setCurrentUser((prevUser) =>
+      prevUser === "Yousef Dawood" ? "Islam Machachev" : "Yousef Dawood",
+    );
+  }
+
   return {
-    currentUserId,
-    currentUser,
-    otherUser,
+    senderUser,
+    recieverUser,
     messages,
     inputText,
     messagesEndRef,
     setInputText,
-    switchPerspective,
     handleSendMessage,
     handleKeyDown,
+    switchUser,
   };
 }

@@ -1,34 +1,29 @@
 import { useChat } from "./hooks/use-chat";
-import { USERS } from "./data/mock-chat";
-import { UserSwitcher } from "./components/user-switcher";
 import { ChatContainer } from "./components/chat-container";
+import { UserSwitcher } from "./components/user-switcher";
 
 export default function App() {
   const {
-    currentUserId,
-    currentUser,
-    otherUser,
+    senderUser,
+    recieverUser,
     messages,
     inputText,
     messagesEndRef,
     setInputText,
-    switchPerspective,
     handleSendMessage,
     handleKeyDown,
+    switchUser,
   } = useChat();
 
   return (
     <div className="min-h-screen bg-slate-100/70 flex flex-col items-center justify-center p-3 sm:p-6 font-sans">
       <UserSwitcher
-        currentUserName={currentUser.name}
-        onSwitch={switchPerspective}
+        currentUserName={senderUser?.name || "Unknown"}
+        onSwitch={switchUser}
       />
-
       <ChatContainer
-        otherUser={otherUser}
-        currentUser={currentUser}
-        currentUserId={currentUserId}
-        users={USERS}
+        senderUser={senderUser}
+        recieverUser={recieverUser}
         messages={messages}
         messagesEndRef={messagesEndRef}
         inputText={inputText}

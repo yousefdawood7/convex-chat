@@ -5,11 +5,3 @@ export interface User {
   status: "online" | "offline";
   role: string;
 }
-
-export interface Message {
-  id: string;
-  senderId: string;
-  text: string;
-  timestamp: string;
-  status?: "sent" | "delivered" | "read";
-}
