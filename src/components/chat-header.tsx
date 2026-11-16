@@ -2,10 +2,10 @@ import { Loader2 } from "lucide-react";
 import type { Doc } from "../../convex/_generated/dataModel";
 
 interface ChatHeaderProps {
-  recieverUser: Doc<"users"> | undefined;
+  senderUser: Doc<"users"> | undefined;
 }
 
-export function ChatHeader({ recieverUser: user }: ChatHeaderProps) {
+export function ChatHeader({ senderUser: user }: ChatHeaderProps) {
   return (
     <header className="px-5 py-3.5 border-b border-slate-100 bg-white/95 backdrop-blur-sm flex items-center justify-between z-10">
       <div className="flex items-center gap-3">

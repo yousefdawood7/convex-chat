@@ -27,7 +27,7 @@ export function ChatContainer({
 }: ChatContainerProps) {
   return (
     <div className="w-full max-w-2xl h-[650px] bg-white rounded-2xl shadow-sm border border-slate-200/80 flex flex-col overflow-hidden">
-      <ChatHeader recieverUser={recieverUser} />
+      <ChatHeader senderUser={senderUser} />
       <MessageList
         senderUser={senderUser}
         recieverUser={recieverUser}
